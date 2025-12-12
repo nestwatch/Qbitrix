@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoQuest - Reset Password</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 50%, #4f46e5 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .loading {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+        }
+        .success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+        .fallback-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .fallback-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #instructions {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌍</div>
+        <div class="title">GeoQuest</div>
+        <div class="subtitle">Opening password reset...</div>
+        
+        <div id="loading" class="status loading">
+            <div class="spinner"></div>
+            Redirecting to GeoQuest app...
+        </div>
+        
+        <div id="instructions" class="status error">
+            <strong>App not found?</strong><br>
+            Please make sure the GeoQuest app is installed on your device.
+            <a href="#" id="retry-link" class="fallback-link">Try Again</a>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        const secret = urlParams.get('secret');
+        const expire = urlParams.get('expire');
+        
+        // Construct deep link
+        const deepLink = `geoquest://reset-password?userId=${encodeURIComponent(userId)}&secret=${encodeURIComponent(secret)}&expire=${encodeURIComponent(expire)}`;
+        
+        console.log('Deep link:', deepLink);
+        
+        // Function to try opening the app
+        function tryOpenApp() {
+            try {
+                // Try to open the app immediately
+                window.location.href = deepLink;
+                
+                // For iOS Safari, we might need to use window.open
+                setTimeout(() => {
+                    window.open(deepLink, '_self');
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error opening app:', error);
+                showFallback();
+            }
+        }
+        
+        // Function to show fallback instructions
+        function showFallback() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('instructions').style.display = 'block';
+        }
+        
+        // Set up retry functionality
+        document.getElementById('retry-link').onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('instructions').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            setTimeout(tryOpenApp, 500);
+        };
+        
+        // Try to open the app on page load
+        if (userId && secret && expire) {
+            tryOpenApp();
+            
+            // Show fallback after 3 seconds if app didn't open
+            setTimeout(showFallback, 3000);
+        } else {
+            // Missing parameters
+            document.getElementById('loading').innerHTML = '<strong>Invalid reset link</strong><br>Please request a new password reset.';
+            document.getElementById('loading').className = 'status error';
+        }
+    </script>
+</body>
+</html>
