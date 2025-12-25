@@ -6,6 +6,7 @@ import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { GeoQuestPasswordReset } from './components/GeoQuestPasswordReset';
+import { AccountDeletion } from './components/AccountDeletion';
 import { Toaster } from './components/ui/sonner';
 import { motion } from 'motion/react';
 import quantumAtom from 'figma:asset/2dc6162f6781f52470269ba74a0edb5177fcac0f.png';
@@ -51,6 +52,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/geoquest-privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/geoquest/password-reset" element={<GeoQuestPasswordReset />} />
+        <Route path="/account-deletion" element={<AccountDeletion />} />
       </Routes>
       <Toaster 
         position="top-right"
